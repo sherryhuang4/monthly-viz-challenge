@@ -1,0 +1,51 @@
+---
+title: "March 2025 Data Viz Challenge: Sankey Plot"
+output: pdf_document
+date: "2025-03-13"
+---
+
+## Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(tidyverse)
+library(ggalluvial)
+```
+
+# March Madness
+
+```{r}
+march_madness <- read.csv("~/march_madness.csv", head=TRUE)
+head(march_madness)
+```
+
+```{r clean-march-madness-data}
+march_madness_clean <- march_madness %>%
+  select(YEAR, SEED, ROUND) %>%
+  group_by(YEAR, SEED, ROUND) %>%
+  filter(YEAR >= 2015 & YEAR < 2025) %>%
+  filter(ROUND != 68) %>%
+  summarise(Freq = n())
+
+head(march_madness_clean)
+```
+
+```{r, warning = FALSE}
+colorfill <- c("cyan", "blue", "darkgreen", "yellow", "orange", "purple", "red")
+
+ggplot(as.data.frame(march_madness_clean),
+       aes(y = Freq, axis1 = SEED, axis2 = ROUND)) +
+  geom_alluvium(aes(fill = factor(ROUND))) +
+  geom_stratum(alpha = 0.15) +
+  scale_fill_manual(values = colorfill) +
+  guides(fill = "none") +
+  geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
+  scale_x_discrete(limits = c("Seed", "Furthest Round"), expand = c(.1, .1)) +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), axis.ticks = element_blank(),
+        axis.text.y = element_blank(), axis.title.y = element_blank(), panel.grid = element_blank(),
+        plot.background = element_rect(fill = 'white'), panel.background = element_rect(fill = 'white')) +
+  ggtitle("March Madness Results from Seed to Round", subtitle = "2015-2024, excluding 2020")
+```
