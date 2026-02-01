@@ -1,0 +1,46 @@
+---
+title: "January 2026 Data Viz Challenge: Waterfall Chart"
+output: pdf_document
+date: "2026-01-22"
+---
+
+## Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(waterfalls)
+```
+
+# NYC Marathon Change in Elevation Waterfall Chart
+
+```{r create-nyc-marathon-elevation-chart}
+mile <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13",
+          "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24",
+          "25", "26.2")
+elevation <- c(-120, 57, 18, 7, -23, -19, -14, 13, 33, -49, 38.5, -40.5, -12, 5, 1,
+           47, -16, -26, 0, 8, -5, 10, 21, 61, -30, 9)
+
+nyc_marathon_elevation <- data.frame(x = mile, y = elevation)
+
+head(nyc_marathon_elevation)
+```
+
+```{r plot}
+waterfall(nyc_marathon_elevation, draw_lines = FALSE) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "NYC Marathon Change in Elevation",
+    x = 'Mile',
+    y = 'Change in Elevation (ft)'
+  ) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.title.position = "plot"
+  )
+```
+
+
