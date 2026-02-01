@@ -1,0 +1,36 @@
+---
+title: "April 2025 Data Viz Challenge: Scatterplot"
+output: pdf_document
+date: "2025-04-10"
+---
+
+## Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(tidyverse)
+```
+
+# COVID
+
+```{r}
+# Read in data
+covid_data <- read.csv("~/covid.csv", head=TRUE)
+head(covid_data)
+```
+
+```{r}
+covid_lm <- lm(Deaths ~ Confirmed, data = covid_data)
+
+covid_data %>%
+  mutate(predicted = covid_lm$fitted.values) %>%
+  ggplot(., mapping = aes(x = Confirmed, y = Deaths)) +
+    geom_smooth(method = 'lm', se = FALSE, col = 'red') +
+    geom_segment(aes(xend = Confirmed, yend = predicted), col = 'blue', alpha = .5) +
+    geom_point() +
+    labs(title = 'Relationship Between COVID Confirmed Cases and Deaths', x = 'Confirmed Cases', y = 'Deaths') +
+  theme_bw()
+```
