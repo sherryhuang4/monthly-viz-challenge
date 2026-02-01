@@ -1,6 +1,6 @@
 # Monthly Data Viz Challenges
 
-This is a personal repo to holds data sets and any code associated with a monthly data viz challenges that an internal team at M&T Bank is hosting!
+This is a personal repo to holds data sets and any code associated with a monthly data viz challenge that an internal team at M&T Bank is hosting!
 
 ## February 2025: Tornado Plot
 
