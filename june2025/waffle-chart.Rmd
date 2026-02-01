@@ -1,0 +1,54 @@
+---
+title: "June 2025 Data Viz Challenge: Waffle Chart"
+output: pdf_document
+date: "2025-06-23"
+---
+
+## Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(waffle)
+```
+
+# Stardew Valley Fish
+
+```{r}
+# Read in data
+sv_fish <- read.csv("~/stardew_valley_fish.csv", head=TRUE)
+head(sv_fish)
+```
+
+```{r}
+# Clean data
+sv_fish_xp <- sv_fish %>%
+  filter(Season == 'All Seasons', Time == 'Anytime', Weather == 'Any') %>%
+  select(Name, Base.XP)
+
+# Normalize to have waffle chart be 220 squares
+total_squares <- 220
+xp <- sv_fish_xp %>%
+  mutate(Squares = round(Base.XP / sum(Base.XP) * total_squares))
+
+# Adjust for rounding error
+diff <- total_squares - sum(xp$Squares)
+if (diff != 0) {
+  max_index <- which.max(xp$Squares)
+  xp$Squares[max_index] <- xp$Squares[max_index] + diff
+}
+
+xp_vector <- setNames(xp$Squares, xp$Name)
+```
+
+```{r}
+waffle(xp_vector, rows = 11, colors = c("#FFE600", "#FFFFd2", "#7f5721", "#2ab1ca",
+                                        "#d43939", "#953b0a", "#a79f93", "#ad3619",
+                                        "#933655", "#7cbb09", "#7c4439", "#ffae7f",
+                                        "#98f2b7"),
+       legend_pos = 'bottom', equal = TRUE) +
+  labs(title = 'XP Earned from Catching Fish in Stardew Valley',
+       subtitle = 'All Season, Anytime, Any Weather Fish') +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
