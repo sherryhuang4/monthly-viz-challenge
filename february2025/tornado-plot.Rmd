@@ -1,0 +1,70 @@
+---
+title: "February 2025 Data Viz Challenge: Tornado Plot"
+output: pdf_document
+date: "2025-02-19"
+---
+
+## Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+```
+
+# Running Times
+
+```{r}
+# Read in data
+running_data <- read.csv("~/data.csv", head=TRUE)
+head(running_data)
+```
+
+```{r}
+run1500 <- running_data %>%
+  filter(Event == '1500 m') %>%
+  filter(Place == 1) %>%
+  select(Time, Date, Gender)
+
+run1500_cleantime <- run1500 %>%
+  mutate(Time_seconds = period_to_seconds(hms(Time))) %>%
+  select(Time_seconds, Date, Gender)
+
+run1500_cleanyear <- run1500_cleantime %>%
+  mutate(Year = as.numeric(substr(Date, 1, 4)))
+
+# Get the fastest time for each year and gender
+fastest1500 <- run1500_cleanyear %>%
+  group_by(Year, Gender) %>%
+  summarize(Time = min(Time_seconds), .groups = 'drop') %>%
+  select(Time, Year, Gender)
+
+fastest1500_gender <- fastest1500 %>%
+  pivot_wider(names_from = 'Gender', values_from = "Time") %>%
+  filter(Year >= 1997)
+
+fastest1500_gender$Men_adj <- fastest1500_gender$Men - 150
+fastest1500_gender$Women_adj <- fastest1500_gender$Women - 150
+
+head(fastest1500_gender)
+```
+
+```{r}
+midpoint <- mean(fastest1500$Time) - 150
+
+ggplot(fastest1500_gender, aes(x = -midpoint - Men_adj, xend = Women_adj, y = Year, yend = Year)) +
+  geom_segment(aes(x = -Men_adj, xend = Women_adj, color = "Men-Women"), linewidth = 8) +
+  geom_text(aes(x = -Men_adj, y = Year, label = Men), hjust = 1.5, size = 3) +
+  geom_text(aes(x = Women_adj, y = Year, label = Women), hjust = -0.5, size = 3) +
+  geom_vline(xintercept = 0, color = 'black') +
+  scale_x_continuous(labels = abs) +
+  scale_color_manual(values = c("Men-Women" = "lightblue")) +
+  labs(x = "Time (sec)", y = "Year", title = "Fastest 1500m Times by Year and Gender", subtitle = "                                                             Men                                                                                                                             Women") +
+  theme(plot.title = element_text(hjust = 0.5), axis.ticks = element_blank(), axis.text.x = element_blank(), 
+        panel.grid = element_blank(), plot.background = element_rect(fill = 'white'), panel.background = element_rect(fill = 'white')) +
+  geom_segment(aes(x = 0, xend = Women_adj, y = Year, yend = Year), color = "pink", linewidth = 8) +
+  guides(color = FALSE)
+```
