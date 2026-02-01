@@ -1,0 +1,81 @@
+---
+title: "November 2025 Data Viz Challenge: Gantt Chart"
+output: pdf_document
+date: "2025-11-12"
+---
+
+## Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# October Sports Calendar
+
+```{r create-sports-schedule}
+sports <- tribble(
+  ~Sport, ~Start, ~End,
+  "MLB", 0.5, 2.5,
+  "MLB", 3.5, 20.5,
+  "MLB", 23.5, 25.5,
+  "MLB", 26.5, 29.5,
+  "MLB", 30.5, 31.5,
+  "NHL", 6.5, 9.5,
+  "NHL", 10.5, 31.5,
+  "NBA", 20.5, 31.5,
+  "NFL", 1.5, 2.5,
+  "NFL", 4.5, 6.5,
+  "NFL", 8.9, 9.5,
+  "NFL", 11.5, 13.5,
+  "NFL", 15.5, 16.5,
+  "NFL", 18.5, 20.5,
+  "NFL", 22.5, 23.5,
+  "NFL", 25.5, 27.5,
+  "NFL", 29.5, 30.5, )
+```
+
+```{r plot}
+ggplot(sports, aes(x = Start, xend = End, y = fct_rev(Sport), yend = Sport, color = Sport)) +
+  geom_segment(linewidth = 15) +
+  scale_color_manual(
+    values = c(
+      "NFL" = "green",
+      "MLB" = "blue",
+      "NBA" = "orange",
+      "NHL" = "red"
+    )
+  ) +
+  scale_x_continuous(
+    breaks = 1:31.5,
+    limits = c(0.5, 31.5),
+  ) +
+  labs(
+    title = "October Sports Calendar",
+    x = 'October 2025',
+    y = NULL
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.title.position = "plot",
+    legend.position = "none"
+  ) +
+  geom_vline(xintercept = 27, linetype = "dashed", color = "gray", linewidth = 1.2) +
+  annotate(
+    "text",
+    x = 27,
+    y = 4.1,
+    label = "Sports Equinox\nOct 27",
+    vjust = -0.5,
+    hjust = 0.5,
+    color = "black",
+    size = 4,
+) + 
+  coord_cartesian(clip = "off")
+```
+
+
