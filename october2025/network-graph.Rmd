@@ -1,0 +1,29 @@
+---
+title: "October 2025 Data Viz Challenge: Network Graph Visualization"
+output: pdf_document
+date: "2025-11-04"
+---
+
+## Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(maths.genealogy)
+library(dplyr)
+library(DiagrammeR)
+library(purrr)
+```
+
+# Professor Amanda Luby!
+
+```{r get-amandas-id}
+search_id("Luby", "Amanda")
+```
+
+```{r get-amandas-genealogy}
+al <- get_genealogy(318548)
+```
+
+```{r plot}
+plot_grviz(al)
+```
